@@ -21,7 +21,7 @@ class LoginController extends Controller
         // role = admin のみ許可
         if (Auth::attempt(array_merge($credentials, ['role' => 'admin']), $request->filled('remember'))) {
             $request->session()->regenerate();
-            return redirect()->route('admin.attendances');
+            return redirect()->route('admin.attendance.list');
         }
 
         return back()->withErrors([

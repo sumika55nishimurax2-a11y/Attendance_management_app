@@ -62,7 +62,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 
     Route::middleware(['auth', 'role:admin'])->group(function () {
-        Route::get('/attendances', [AdminDashboardController::class, 'index'])->name('attendances');
+        Route::get('/attendance/list/{date?}', [AdminDashboardController::class, 'index'])->name('attendance.list');
     });
 });
 
