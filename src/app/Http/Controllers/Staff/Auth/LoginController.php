@@ -18,7 +18,7 @@ class LoginController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::guard('web')->attempt($credentials, $request->filled('remember'))) {
+        if (Auth::guard('web')->attempt(array_merge($credentials, ['role' => 'user']), $request->filled('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('attendance'));
         }

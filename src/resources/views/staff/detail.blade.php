@@ -14,7 +14,7 @@
     </div>
 
     @if ($attendance->is_editable)
-    <form method="POST" action="{{ route('attendance.detail.update', ['id' => $attendance->id]) }}">
+    <form method="POST" action="{{ route('attendance.detail.update', ['id' => $attendance->id ?? 0]) }}">
         @csrf
         @method('POST')
 
@@ -27,9 +27,10 @@
                 <th>日付</th>
                 <td>
                     <div class="field-flex">
-                        <div>{{ $attendance->work_date->format('Y年') }}</div>
-                        <div>{{ $attendance->work_date->format('n月j日') }}</div>
+                        <div>{{ $attendance->work_date?->format('Y年') }}</div>
+                        <div>{{ $attendance->work_date?->format('n月j日') }}</div>
                     </div>
+                    <input type="hidden" name="work_date" value="{{ $attendance->work_date?->format('Y-m-d') }}">
                 </td>
             </tr>
 
@@ -41,6 +42,12 @@
                         <span>〜</span>
                         <input type="text" name="clock_out" value="{{ old('clock_out', optional($attendance->clock_out)->format('H:i')) }}" class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
                     </div>
+                    @error('clock_in')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                    @error('clock_out')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
                 </td>
             </tr>
             @php
@@ -56,10 +63,16 @@
                 </th>
                 <td>
                     <div class="time-flex">
-                        <input type="text" name="break_start[]" value="{{ old("break_start.$i", $break->break_start?->format('H:i')) }}" class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
+                        <input type="text" name="breaks[{{ $i }}][start]" value="{{ old("breaks.$i.start", $break->break_start?->format('H:i')) }}" class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
                         <span>〜</span>
-                        <input type="text" name="break_end[]" value="{{ old("break_end.$i", $break->break_end?->format('H:i')) }}" class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
+                        <input type="text" name="breaks[{{ $i }}][end]" value="{{ old("breaks.$i.end", $break->break_end?->format('H:i')) }}" class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
                     </div>
+                    @error("breaks.$i.start")
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                    @error("breaks.$i.end")
+                    <div class="error">{{ $message }}</div>
+                    @enderror
                 </td>
             </tr>
             @endforeach
@@ -73,15 +86,24 @@
                     @endif
                 </th>
                 <td>
+                    @php
+                    $nextIndex = $breaks->count();
+                    @endphp
                     <div class="time-flex">
-                        <input type="text" name="new_break[break_start]"
-                            value="{{ old('new_break.break_start') }}"
+                        <input type="text" name="breaks[{{ $nextIndex }}][start]"
+                            value="{{ old("breaks.$nextIndex.start") }}"
                             class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
                         <span>〜</span>
-                        <input type="text" name="new_break[break_end]"
-                            value="{{ old('new_break.break_end') }}"
+                        <input type="text" name="breaks[{{ $nextIndex }}][end]"
+                            value="{{ old("breaks.$nextIndex.end") }}"
                             class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
                     </div>
+                    @error("breaks.$nextIndex.start")
+                    <div class="error">{{ $message }}</div>
+                    @enderror
+                    @error("breaks.$nextIndex.end")
+                    <div class="error">{{ $message }}</div>
+                    @enderror
                 </td>
             </tr>
 
@@ -91,6 +113,9 @@
                     <textarea name="note" class="textarea" {{ $attendance->is_editable ? '' : 'disabled' }}>
                     {{ old('note', $attendance->note) }}
                     </textarea>
+                    @error('note')
+                    <div class="error">{{ $message }}</div>
+                    @enderror
                 </td>
             </tr>
         </table>

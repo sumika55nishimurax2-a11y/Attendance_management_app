@@ -4,13 +4,13 @@
 
 ### Docker ビルド
 
-1.                          docker-compose up -d --build
+1.                                    docker-compose up -d --build
 
 ### Laravel 環境構築
 
-1.                          docker-compose exec php bash
+1.                                    docker-compose exec php bash
 
-2.                          composer install
+2.                                    composer install
 
 3.  『.env.example』をコピー名前変更し『.env』を作成。70 行目あたりと 31 行目あたりを以下のように編集
 
@@ -56,7 +56,7 @@
 
 ## 使用技術（メール認証）
 
-- mailhog
+- MailHog
 
 ## ER 図
 
@@ -68,8 +68,19 @@
 
   - 管理機能アクセス: http://localhost/admin/login
 
-- phpMyadmin：http://localhost:8080/
+- phpMyAdmin：http://localhost:8080/
 
-- mailhog: http://localhost:8025/
+- MailHog: http://localhost:8025/
 
 ## そのほか
+
+- メール認証は、上記の URL MailHog にアクセスしてメールを確認してください。
+
+- 新規会員登録後にメール認証をしないでログインを試みた場合に表示されるメール認証誘導画面の「認証はこちらから」ボタンですが、セキュリティの関係上、開発環境のみ動作するようになっています。
+
+- 管理機能アクセス用管理者ダミーデータ
+  ＊この管理者情報では一般機能にはログインはできません。
+  - メールアドレス
+    admin@example.com
+  - パスワード
+    password123

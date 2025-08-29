@@ -10,6 +10,7 @@ use App\Http\Controllers\Staff\AttendanceController as StaffAttendanceController
 use App\Http\Controllers\Admin\Auth\DashboardController as AdminDashboardController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 
 
@@ -44,13 +45,16 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-Route::post('/staff/auth/verify-now', function () {
-    $user = auth()->user();
-    if (!$user->hasVerifiedEmail()) {
-        $user->markEmailAsVerified();
-    }
-    return redirect('/attendance')->with('status', 'メールアドレスを認証しました');
-})->middleware('auth')->name('verification.now');
+// 開発環境限定ルート・ワンクリック認証完了ショートカット
+if (App::environment('local', 'staging')) {
+    Route::post('/staff/auth/verify-now', function () {
+        $user = auth()->user();
+        if (!$user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
+        return redirect('/attendance')->with('status', 'メールアドレスを認証しました');
+    })->middleware('auth')->name('verification.now');
+}
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
@@ -58,7 +62,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 
     Route::middleware(['auth', 'role:admin'])->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/attendances', [AdminDashboardController::class, 'index'])->name('attendances');
     });
 });
 
@@ -80,6 +84,6 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::post('/attendance/break-end', [StaffDashboardController::class, 'endBreak'])->name('attendance.break_end');
     Route::get('/attendance/list', [StaffAttendanceController::class, 'index'])->name('attendance.list');
     Route::get('/stamp_correction_request/list', [StaffAttendanceController::class, 'requestList'])->name('stamp_correction_request.list');
-    Route::get('/attendance/detail/{id}', [StaffAttendanceController::class, 'show'])->name('attendance.detail');
-    Route::post('/attendance/detail/{id}/update', [StaffAttendanceController::class, 'update'])->name('attendance.detail.update');
+    Route::get('/attendance/detail/{id?}', [StaffAttendanceController::class, 'show'])->name('attendance.detail');
+    Route::post('/attendance/detail/{id?}/update', [StaffAttendanceController::class, 'update'])->name('attendance.detail.update');
 });

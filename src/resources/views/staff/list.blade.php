@@ -46,7 +46,7 @@
                     @if ($att)
                     <a href="{{ route('attendance.detail', ['id' => $att->id]) }}" class="detail-link">詳細</a>
                     @else
-                    <span class="detail-link disabled">詳細</span>
+                    <a href="{{ route('attendance.detail', ['date' => $date->format('Y-m-d')]) }}" class="detail-link">詳細</a>
                     @endif
                 </td>
             </tr>
