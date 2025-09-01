@@ -63,6 +63,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/attendance/list/{date?}', [AdminDashboardController::class, 'index'])->name('attendance.list');
+        Route::get('/attendance/detail/{id?}', [AdminDashboardController::class, 'show'])->name('attendance.detail');
     });
 });
 

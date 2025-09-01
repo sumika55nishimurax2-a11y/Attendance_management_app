@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\BreakTime;
+use Carbon\Carbon;
 
 class Attendance extends Model
 {
@@ -93,5 +94,13 @@ class Attendance extends Model
     {
         $latestRequest = $this->correctionRequests()->latest()->first();
         return !$latestRequest || !$latestRequest->is_pending;
+    }
+
+    public function getDisplayDateAttribute()
+    {
+        if ($this->work_date) {
+            return $this->work_date;
+        }
+        return isset($this->attributes['work_date']) ? Carbon::parse($this->attributes['work_date']) : null;
     }
 }

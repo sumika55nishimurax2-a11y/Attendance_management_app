@@ -42,7 +42,14 @@
                 <td>{{ $attendance?->clock_out_formatted ?? '' }}</td>
                 <td>{{ $attendance?->break_formatted ?? '' }}</td>
                 <td>{{ $attendance?->total_formatted ?? '' }}</td>
-                <td><a href="#" class="detail-link">詳細</a></td>
+                <td>
+                    @if ($attendance)
+                    <a href="{{ route('admin.attendance.detail', ['id' => $attendance->id,
+        'date' => $currentDate]) }}" class="detail-link">詳細</a>
+                    @else
+                    <a href="{{ route('admin.attendance.detail', ['user_id' => $user->id, 'date' => $currentDate->format('Y-m-d')]) }}" class="detail-link">詳細</a>
+                    @endif
+                </td>
             </tr>
             @endforeach
         </tbody>
