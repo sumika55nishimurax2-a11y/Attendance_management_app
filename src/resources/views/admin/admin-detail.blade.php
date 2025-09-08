@@ -13,14 +13,14 @@
         <h1 class="title">勤怠詳細</h1>
     </div>
 
-    <form method="POST" action="">
+    <form method="POST" action="{{ $attendance->id ? route('admin.attendance.update', ['id'=>$attendance->id]) : route('admin.attendance.store') }}">
         @csrf
-        @method('POST')
 
         <table class="detail-table">
             <tr>
                 <th>名前</th>
                 <td>{{ $attendance->user->name }}</td>
+                <input type="hidden" name="user_id" value="{{ $attendance->user_id }}">
             </tr>
             <tr>
                 <th>日付</th>
@@ -115,9 +115,7 @@
             <tr>
                 <th>備考</th>
                 <td>
-                    <textarea name="note" class="textarea" {{ $attendance->is_editable ? '' : 'disabled' }}>
-                    {{ old('note', $attendance->note) }}
-                    </textarea>
+                    <textarea name="note" class="remarks" {{ $attendance->is_editable ? '' : 'disabled' }}>{{ old('note', $attendance->note) }}</textarea>
                     @error('note')
                     <div class="error">{{ $message }}</div>
                     @enderror
@@ -141,6 +139,13 @@
                 } else {
                     e.target.value = val;
                 }
+            });
+        });
+        document.querySelectorAll('.remarks').forEach(function(textarea) {
+            textarea.addEventListener('focus', function(e) {
+                setTimeout(() => {
+                    this.setSelectionRange(0, 0);
+                }, 0);
             });
         });
     });

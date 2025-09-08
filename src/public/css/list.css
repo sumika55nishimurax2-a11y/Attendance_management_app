@@ -18,6 +18,8 @@ body {
 
     width: 60vw;
     text-align: left;
+
+    margin: 60px 0;
 }
 
 .title {
@@ -88,7 +90,7 @@ body {
     font-weight: bold;
     text-align: center;
     border-bottom: solid 3px #E1E1E1;
-    padding: 10px 15px;
+    padding: 20px 15px;
 }
 
 .detail-link {
@@ -106,9 +108,31 @@ body {
     letter-spacing: 2.4px;
     font-weight: bold;
     border-bottom: solid 2px #E1E1E1;
-    padding: 10px 15px;
+    padding: 20px 15px;
 }
 
 .attendance-table tbody tr:last-child td {
     border-bottom: none;
+}
+
+.csv-button-area {
+    display: flex;
+    justify-content: flex-end;
+    width: 60vw;
+
+    margin-top: 20px;
+}
+
+.csv-button {
+    background-color: #000;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 22px;
+    font-family: Inter;
+    font-weight: bold;
+    width: 180px;
+    height: 50px;
+    text-align: center;
+    line-height: 50px;
+    display: inline-block;
 }

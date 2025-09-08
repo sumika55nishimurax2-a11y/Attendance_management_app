@@ -110,9 +110,7 @@
             <tr>
                 <th>備考</th>
                 <td>
-                    <textarea name="note" class="textarea" {{ $attendance->is_editable ? '' : 'disabled' }}>
-                    {{ old('note', $attendance->note) }}
-                    </textarea>
+                    <textarea name="note" class="remarks" {{ $attendance->is_editable ? '' : 'disabled' }}>{{ old('note', $attendance->note) }}</textarea>
                     @error('note')
                     <div class="error">{{ $message }}</div>
                     @enderror
@@ -182,6 +180,13 @@
                 } else {
                     e.target.value = val;
                 }
+            });
+        });
+        document.querySelectorAll('.remarks').forEach(function(textarea) {
+            textarea.addEventListener('focus', function(e) {
+                setTimeout(() => {
+                    this.setSelectionRange(0, 0);
+                }, 0);
             });
         });
     });

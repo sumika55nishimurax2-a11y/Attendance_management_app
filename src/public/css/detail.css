@@ -93,19 +93,29 @@ td {
     font-weight: bold;
 }
 
-.textarea {
-    resize: none;
+.remarks {
     width: 316px;
     height: 72px;
-    border: #D9D9D9 solid 1px;
+    border: 1px solid #D9D9D9;
     border-radius: 4px;
-    margin: 10px 0;
 
-    color: #000;
-    font-family: Inter;
+    font-family: Inter, sans-serif;
     font-size: 16px;
-    letter-spacing: 2.4px;
     font-weight: bold;
+    letter-spacing: 2.4px;
+
+    text-align: left;
+        /* 左寄せ */
+        white-space: pre-wrap;
+        /* 折り返し有効、改行保持 */
+        word-wrap: break-word;
+        /* 単語で折り返す */
+        overflow-y: auto;
+        /* 高さ超過時に縦スクロール */
+        resize: none;
+        /* サイズ変更不可 */
+
+        display: block;
 }
 
 .attendance-table tbody tr:last-child td {

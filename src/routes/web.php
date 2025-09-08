@@ -8,10 +8,10 @@ use App\Http\Controllers\Staff\Auth\RegisterController;
 use App\Http\Controllers\Staff\Auth\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\AttendanceController as StaffAttendanceController;
 use App\Http\Controllers\Admin\Auth\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\StaffController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-
 
 
 /*
@@ -63,7 +63,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/attendance/list/{date?}', [AdminDashboardController::class, 'index'])->name('attendance.list');
-        Route::get('/attendance/detail/{id?}', [AdminDashboardController::class, 'show'])->name('attendance.detail');
+        Route::get('/attendance/{id?}', [AdminDashboardController::class, 'show'])->name('attendance.detail');
+        Route::post('/attendance/store', [AdminDashboardController::class, 'store'])
+            ->name('attendance.store');
+        Route::post('/attendance/{id}/update', [AdminDashboardController::class, 'update'])
+            ->name('attendance.update');
+
+        Route::get('/staff/list', [StaffController::class, 'index'])->name('staffs.index');
+        Route::get('/attendance/staff/{user_id}/{year?}/{month?}', [StaffController::class, 'monthly'])->name('staffs.attendance');
+        Route::get('/staffs/{user_id}/attendance/csv', [StaffController::class, 'exportCsv'])
+            ->name('staffs.attendance.csv');
     });
 });
 

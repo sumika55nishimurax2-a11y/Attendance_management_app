@@ -10,7 +10,7 @@
             @if(Auth::user()->isAdmin())
             {{-- 管理者専用メニュー --}}
             <li><a href="{{ route('admin.attendance.list') }}">勤怠一覧</a></li>
-            <li><a href="">スタッフ一覧</a></li>
+            <li><a href="{{ route('admin.staffs.index') }}">スタッフ一覧</a></li>
             <li><a href="">申請一覧</a></li>
             <li>
                 <form action="{{ route('admin.logout') }}" method="post">
