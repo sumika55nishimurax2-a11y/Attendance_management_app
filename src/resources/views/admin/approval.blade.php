@@ -72,7 +72,7 @@
 
             <tr>
                 <th>備考</th>
-                <td>{{ $attendance->note ?? 'なし' }}</td>
+                <td>{{ $correctionRequest->reason ?? 'なし' }}</td>
             </tr>
         </table>
     </form>

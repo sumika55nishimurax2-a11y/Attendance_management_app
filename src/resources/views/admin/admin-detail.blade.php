@@ -124,7 +124,11 @@
         </table>
 
         <div class="button-wrapper">
+            @if($attendance->is_editable)
             <button type="submit" class="btn-primary">修正</button>
+            @else
+            <p class="message">この勤怠は修正申請中のため、ここからは修正できません。</p>
+            @endif
         </div>
     </form>
 
