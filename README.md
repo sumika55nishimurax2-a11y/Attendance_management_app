@@ -76,11 +76,22 @@
 
 - メール認証は、上記の URL MailHog にアクセスしてメールを確認してください。
 
-- 新規会員登録後にメール認証をしないでログインを試みた場合に表示されるメール認証誘導画面の「認証はこちらから」ボタンですが、セキュリティの関係上、開発環境のみ動作するようになっています。
+- 一般ユーザーログイン用ダミーデータ
+  パスワードは共通で作成しています。
+  password:password
+  -ユーザー１
+  name:佐藤太郎
+  email:taro.sato@example.com
+  -ユーザー２
+  name:鈴木花子
+  email:hanako.suzuki@example.com
+  -ユーザー３
+  name:田中一郎
+  email:ichiro.tanaka@example.com
+
 
 - 管理機能アクセス用管理者ダミーデータ
   ＊この管理者情報では一般機能にはログインはできません。
-  - メールアドレス
-    admin@example.com
-  - パスワード
-    password123
+  name:山田太一(管理者)
+  email:admin@example.com
+  password:admin123

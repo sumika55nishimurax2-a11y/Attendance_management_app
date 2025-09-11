@@ -166,7 +166,7 @@
         </tr>
     </table>
     <div class="button-wrapper">
-        <p>＊承認待ちのため修正はできません</p>
+        <p class="message">＊承認待ちのため修正はできません</p>
     </div>
     @endif
 </div>

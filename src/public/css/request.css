@@ -123,6 +123,12 @@ td {
     font-weight: bold;
     border-bottom: solid 2px #E1E1E1;
     padding: 20px 15px;
+    vertical-align: middle;
+}
+.reason{
+    width: 300px;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 .left-td {
@@ -132,3 +138,4 @@ td {
 .request-table tbody tr:last-child td {
     border-bottom: none;
 }
+

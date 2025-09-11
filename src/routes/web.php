@@ -4,11 +4,12 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Staff\Auth\LoginController as StaffLoginController;
-use App\Http\Controllers\Staff\Auth\RegisterController;
+use App\Http\Controllers\Staff\Auth\RegisterController as StaffRegisterController;
 use App\Http\Controllers\Staff\Auth\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\AttendanceController as StaffAttendanceController;
 use App\Http\Controllers\Admin\Auth\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\RequestController as AdminRequestController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -73,6 +74,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/attendance/staff/{user_id}/{year?}/{month?}', [StaffController::class, 'monthly'])->name('staffs.attendance');
         Route::get('/staffs/{user_id}/attendance/csv', [StaffController::class, 'exportCsv'])
             ->name('staffs.attendance.csv');
+        Route::get('/stamp_correction_request/list', [AdminRequestController::class, 'index'])->name('stamp_correction_request.list');
+        Route::get('/stamp_correction_request/approve/{attendance_correction_request}', [AdminRequestController::class, 'showApprove'])
+            ->name('stamp_correction_request.show');
+        Route::post('/stamp_correction_request/approve/{attendance_correction_request}', [AdminRequestController::class, 'approve'])
+            ->name('stamp_correction_request.approve');
     });
 });
 
@@ -84,7 +90,7 @@ Route::post('/logout', [StaffLoginController::class, 'logout'])->name('staff.log
 Route::get('/register', function () {
     return view('staff.auth.register');
 })->name('register.form');
-Route::post('/register', [RegisterController::class, 'store'])->name('staff.register');
+Route::post('/register', [StaffRegisterController::class, 'store'])->name('staff.register');
 
 Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('/attendance', [StaffDashboardController::class, 'index'])->name('attendance');
