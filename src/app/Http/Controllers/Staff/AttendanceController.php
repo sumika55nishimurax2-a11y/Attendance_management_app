@@ -43,18 +43,22 @@ class AttendanceController extends Controller
     public function show(Request $request, $id = null)
     {
         if ($id) {
-            // 登録済み勤怠を表示
-            $attendance = Attendance::findOrFail($id);
+            $attendance = Attendance::with('correctionRequests')->findOrFail($id);
+            // 最新の修正申請を取得
+            $latestRequest = $attendance->correctionRequests()->latest()->first();
         } else {
-            // 未登録日の場合は new モデルを渡す
             $date = $request->input('date');
             $attendance = new Attendance([
                 'user_id'   => Auth::id(),
                 'work_date' => $date,
             ]);
+            $latestRequest = null;
         }
 
-        return view('staff.detail', compact('attendance'));
+        return view('staff.detail', [
+            'attendance' => $attendance,
+            'latestRequest' => $latestRequest, // Bladeで使う
+        ]);
     }
 
     public function update(AttendanceRequest $request, $id)

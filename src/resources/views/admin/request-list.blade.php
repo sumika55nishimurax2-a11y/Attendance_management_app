@@ -45,7 +45,6 @@
                 @endforeach
             </tbody>
         </table>
-        {{ $pendingRequests->links() }}
     </div>
 
     <div id="approved" class="tab-panel">
@@ -75,7 +74,6 @@
                 @endforeach
             </tbody>
         </table>
-        {{ $approvedRequests->links() }}
     </div>
 
 

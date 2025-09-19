@@ -35,40 +35,22 @@
             <tr>
                 <th>出勤・退勤</th>
                 <td>
-                    {{ optional($attendance->clock_in)->format('H:i') ?? '-' }}
+                    {{ $displayAttendance->clock_in ? \Carbon\Carbon::parse($displayAttendance->clock_in)->format('H:i') : '-' }}
                     〜
-                    {{ optional($attendance->clock_out)->format('H:i') ?? '-' }}
+                    {{ $displayAttendance->clock_out ? \Carbon\Carbon::parse($displayAttendance->clock_out)->format('H:i') : '-' }}
                 </td>
             </tr>
 
-            @foreach ($attendance->breaks as $i => $break)
+            @foreach ($displayAttendance->breaks as $i => $break)
             <tr>
-                <th>@if ($i === 0)
-                    休憩
-                    @else
-                    休憩{{ $i + 1 }}
-                    @endif
-                </th>
+                <th>{{ $i === 0 ? '休憩' : '休憩'.($i+1) }}</th>
                 <td>
-                    {{ $break->break_start?->format('H:i') ?? '-' }}
+                    {{ $break->break_start ? \Carbon\Carbon::parse($break->break_start)->format('H:i') : '-' }}
                     〜
-                    {{ $break->break_end?->format('H:i') ?? '-' }}
+                    {{ $break->break_end ? \Carbon\Carbon::parse($break->break_end)->format('H:i') : '-' }}
                 </td>
             </tr>
             @endforeach
-
-            <tr>
-                <th>
-                    @if($attendance->breaks->count() === 0)
-                    休憩
-                    @elseif($attendance->breaks->count() === 1)
-                    休憩2
-                    @else
-                    休憩{{ $attendance->breaks->count() + 1 }}
-                    @endif
-                </th>
-                <td></td>
-            </tr>
 
             <tr>
                 <th>備考</th>

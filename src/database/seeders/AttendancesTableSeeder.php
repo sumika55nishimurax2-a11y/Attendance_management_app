@@ -28,8 +28,8 @@ class AttendancesTableSeeder extends Seeder
                         continue;
                     }
 
-                    $clockIn = Carbon::createFromTime(9, rand(0, 20));   // 9:00〜9:20 出社
-                    $clockOut = Carbon::createFromTime(18, rand(0, 10)); // 18:00〜18:10 退社
+                    $clockIn = Carbon::createFromTime(9, rand(0, 20));
+                    $clockOut = Carbon::createFromTime(18, rand(0, 10));
 
                     $attendance = Attendance::create([
                         'user_id' => $user->id,
@@ -37,7 +37,7 @@ class AttendancesTableSeeder extends Seeder
                         'clock_in' => $clockIn->format('H:i:s'),
                         'clock_out' => $clockOut->format('H:i:s'),
                         'break_time' => 60,
-                        'note' => rand(0, 10) > 8 ? '外回り' : null, // たまに備考
+                        'note' => null,
                     ]);
 
                     BreakTime::create([

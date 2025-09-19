@@ -54,15 +54,12 @@ class DashboardController extends Controller
             'clock_out' => 'nullable|date_format:H:i|after:clock_in',
             'breaks.*.start' => 'nullable|date_format:H:i',
             'breaks.*.end'   => 'nullable|date_format:H:i|after:breaks.*.start',
-            'note' => 'nullable|string|max:500',
+            'reason' => 'required|string|max:255',
         ]);
 
         // 出退勤
         $attendance->clock_in  = $validated['clock_in'] ?? null;
         $attendance->clock_out = $validated['clock_out'] ?? null;
-
-        // 備考
-        $attendance->note = $validated['note'] ?? null;
 
         // 休憩処理
         $totalBreakMinutes = 0;
@@ -89,6 +86,13 @@ class DashboardController extends Controller
         $attendance->break_time = $totalBreakMinutes;
         $attendance->save();
 
+        $attendance->correctionRequests()->create([
+            'reason'      => $validated['reason'],
+            'status'      => 'approved',
+            'approver_id' => auth()->id(),
+        ]);
+
+
         return redirect()->route('admin.attendance.detail', ['id' => $attendance->id])
             ->with('status', '勤怠を修正しました。');
     }
@@ -102,7 +106,7 @@ class DashboardController extends Controller
             'clock_out' => 'nullable|date_format:H:i|after:clock_in',
             'breaks.*.start' => 'nullable|date_format:H:i',
             'breaks.*.end'   => 'nullable|date_format:H:i|after:breaks.*.start',
-            'note' => 'nullable|string|max:500',
+            'reason' => 'required|string|max:255',
         ]);
 
         // 勤怠本体作成
@@ -111,7 +115,6 @@ class DashboardController extends Controller
             'work_date' => $validated['work_date'],
             'clock_in'  => $validated['clock_in'] ?? null,
             'clock_out' => $validated['clock_out'] ?? null,
-            'note'      => $validated['note'] ?? null,
         ]);
 
         // 休憩処理
@@ -133,10 +136,15 @@ class DashboardController extends Controller
                 }
             }
         }
-
         // 合計休憩時間を反映
         $attendance->break_time = $totalBreakMinutes;
         $attendance->save();
+
+        $attendance->correctionRequests()->create([
+            'reason'       => $validated['reason'],
+            'status'       => 'approved',
+            'approver_id' => auth()->id(),
+        ]);
 
         return redirect()->route('admin.attendance.detail', ['id' => $attendance->id])
             ->with('status', '勤怠を新規登録しました。');

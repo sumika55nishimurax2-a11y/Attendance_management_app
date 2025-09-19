@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\CorrectionRequest;
+use App\Models\Attendance;
 
 class RequestController extends Controller
 {
@@ -27,23 +28,105 @@ class RequestController extends Controller
 
     public function showApprove(CorrectionRequest $attendance_correction_request)
     {
-        // 勤怠データも一緒に取得
+        // 勤怠データを取得、存在しなければ新規作成用インスタンス
         $attendance = $attendance_correction_request->attendance;
 
+        if (!$attendance) {
+            $attendance = new Attendance([
+                'user_id' => $attendance_correction_request->user_id,   // 必須
+                'work_date' => $attendance_correction_request ?? now()->format('Y-m-d'), // カラム名を正しく
+                'clock_in' => null,    // 必要に応じて初期値
+                'clock_out' => null,
+                'break_time' => 0,
+                'note' => null,
+            ]);
+            $attendance->breaks = collect(); // 休憩は空コレクション
+        }
+
+        // 表示用コピー
+        $displayAttendance = $attendance->replicate();
+
+        // 修正申請内容を反映（note は含めない）
+        foreach ($attendance_correction_request->after_value ? [$attendance_correction_request] : [] as $req) {
+            $field = $req->field;
+            $after = $req->after_value;
+            if (is_null($after)) continue;
+
+            if (in_array($field, ['clock_in', 'clock_out'])) {
+                $displayAttendance->{$field} = $after;
+            } elseif (in_array($field, ['break_start', 'break_end'])) {
+                // 休憩用の処理、break_idで特定
+                $breakIndex = $displayAttendance->breaks->search(function ($b) use ($req) {
+                    return $b->id === $req->break_id;
+                });
+
+                if ($breakIndex !== false) {
+                    $displayAttendance->breaks[$breakIndex]->{$field} = $after;
+                }
+            }
+        }
+
         return view('admin.approval', [
+            'attendance'        => $attendance,
             'correctionRequest' => $attendance_correction_request,
-            'attendance' => $attendance,
+            'displayAttendance' => $displayAttendance,
+            'reason'            => $attendance_correction_request->reason, // 申請理由
         ]);
     }
 
-    public function approve(CorrectionRequest $attendance_correction_request)
+    public function approve(CorrectionRequest $correctionRequest)
     {
-        $attendance_correction_request->status = 'approved';
-        $attendance_correction_request->save();
+        // 勤怠データ取得、存在しなければ新規作成
+        $attendance = $correctionRequest->attendance;
 
-        // 承認後に同じ申請ページへリダイレクト
-        return redirect()->route('admin.stamp_correction_request.show', [
-            'attendance_correction_request' => $attendance_correction_request->id
-        ])->with('success', '申請を承認しました。');
+        if (!$attendance) {
+            $attendance = Attendance::create([
+                'user_id' => $correctionRequest->user_id,
+                'date'    => $correctionRequest->date,
+            ]);
+        }
+
+        // 保留中の申請を全て取得
+        $requests = $attendance->correctionRequests()->where('status', 'pending')->get();
+
+        foreach ($requests as $req) {
+            $after = $req->after_value;
+            if (is_null($after)) continue;
+
+            switch ($req->field) {
+                case 'clock_in':
+                case 'clock_out':
+                    $attendance->{$req->field} = $after;
+                    break;
+
+                case 'break_start':
+                case 'break_end':
+                    // 複数の休憩に対応
+                    $break = $attendance->breaks()->find($req->break_id);
+
+                    if ($break) {
+                        // 既存 break の更新
+                        $break->{$req->field} = $after;
+                        $break->save();
+                    } else {
+                        // break_id が無い場合は新規作成
+                        $attendance->breaks()->create([
+                            'id' => $req->break_id,
+                            $req->field => $after,
+                        ]);
+                    }
+                    break;
+            }
+
+            // 申請ステータスを承認済みに更新
+            $req->status = 'approved';
+            $req->approver_id = auth()->id();
+            $req->save();
+        }
+
+        // 勤怠本体保存
+        $attendance->save();
+
+        return redirect()->back()->with('success', '承認が完了しました。');
     }
 }

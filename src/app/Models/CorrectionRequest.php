@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Attendance;
 
 class CorrectionRequest extends Model
 {
@@ -23,6 +24,7 @@ class CorrectionRequest extends Model
     ];
 
     protected $fillable = [
+        'user_id',
         'attendance_id',
         'field',
         'before_value',
@@ -31,6 +33,7 @@ class CorrectionRequest extends Model
         'requested_at',
         'status',
         'approver_id',
+        'break_id',
     ];
 
     protected $casts = [
@@ -39,12 +42,36 @@ class CorrectionRequest extends Model
 
     public function attendance(): BelongsTo
     {
-        return $this->belongsTo(Attendance::class);
+        return $this->belongsTo(Attendance::class, 'attendance_id', 'id');
     }
 
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    public function approve(int $approverId): void
+    {
+        $this->status = self::STATUS_APPROVED;
+        $this->approver_id = $approverId;
+        $this->save();
+
+        // Attendance に反映
+        if ($this->attendance && $this->field) {
+            $this->attendance->update([
+                $this->field => $this->after_value,
+            ]);
+        }
+
+        $this->status = self::STATUS_CORRECTED;
+        $this->save();
+    }
+
+    public function reject(int $approverId): void
+    {
+        $this->status = self::STATUS_REJECTED;
+        $this->approver_id = $approverId;
+        $this->save();
     }
 
     public function getIsPendingAttribute(): bool

@@ -46,7 +46,6 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-// 開発環境限定ルート・ワンクリック認証完了ショートカット
 if (App::environment('local', 'staging')) {
     Route::post('/staff/auth/verify-now', function () {
         $user = auth()->user();

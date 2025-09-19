@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 use App\Models\Attendance;
+use App\Models\BreakTime;
 use App\Models\CorrectionRequest;
 use Carbon\Carbon;
 
@@ -15,42 +16,64 @@ class CorrectionRequestsTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $attendances = Attendance::inRandomOrder()->take(10)->get();
+        $users = User::where('role', 'user')->get();
 
-        foreach ($attendances as $attendance) {
-            $field = collect(['clock_in', 'clock_out', 'break_time'])->random();
+        foreach ($users as $user) {
 
-            $before = null;
-            $after = null;
-            $reason = null;
+            // 既存勤怠に対する修正申請を作成（例：当月の最終勤務日）
+            $attendance = Attendance::where('user_id', $user->id)
+                ->orderBy('work_date', 'desc')
+                ->first();
 
-            switch ($field) {
-                case 'clock_in':
-                    $before = $attendance->clock_in;
-                    $after = Carbon::parse($attendance->clock_in)->subMinutes(10)->format('H:i:s');
-                    $reason = '遅延のため';
-                    break;
+            if ($attendance) {
+                // 勤怠の出勤時間修正申請
+                CorrectionRequest::create([
+                    'user_id' => $user->id,
+                    'attendance_id' => $attendance->id,
+                    'field' => 'clock_in',
+                    'break_id' => null,
+                    'before_value' => $attendance->clock_in,
+                    'after_value' => '08:50:00',
+                    'reason' => '出勤時間修正テスト',
+                    'requested_at' => Carbon::now(),
+                    'status' => 'pending',
+                    'approver_id' => null,
+                ]);
 
-                case 'clock_out':
-                    $before = $attendance->clock_out;
-                    $after = Carbon::parse($attendance->clock_out)->addMinutes(20)->format('H:i:s');
-                    $reason = '残業のため';
-                    break;
-
-                case 'break_time':
-                    $before = $attendance->break_time;
-                    $after = $attendance->break_time + 15;
-                    $reason = '追加休憩申請のため';
-                    break;
+                // 休憩終了時間修正申請（複数休憩対応例）
+                $break = $attendance->breaks()->first();
+                if ($break) {
+                    CorrectionRequest::create([
+                        'user_id' => $user->id,
+                        'attendance_id' => $attendance->id,
+                        'field' => 'break_end',
+                        'break_id' => $break->id,
+                        'before_value' => $break->break_end,
+                        'after_value' => '12:45:00',
+                        'reason' => '休憩終了時間修正テスト',
+                        'requested_at' => Carbon::now(),
+                        'status' => 'pending',
+                        'approver_id' => null,
+                    ]);
+                }
             }
 
+            // 新規勤怠用の申請（attendance はまだ作られていない）
+            $futureDate = Carbon::now()->addDay();
+            $newAttendance = Attendance::create([
+                'user_id' => $user->id,
+                'work_date' => $futureDate->format('Y-m-d'),
+            ]);
+
             CorrectionRequest::create([
-                'attendance_id' => $attendance->id,
-                'field' => $field,
-                'before_value' => $before,
-                'after_value' => $after,
-                'reason' => $reason,
-                'requested_at' => now(),
+                'user_id' => $user->id,
+                'attendance_id' => $newAttendance->id,
+                'field' => 'clock_in',
+                'break_id' => null,
+                'before_value' => null,
+                'after_value' => '09:10:00',
+                'reason' => '新規勤怠申請テスト',
+                'requested_at' => Carbon::now(),
                 'status' => 'pending',
                 'approver_id' => null,
             ]);

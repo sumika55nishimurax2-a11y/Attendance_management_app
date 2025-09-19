@@ -115,8 +115,10 @@
             <tr>
                 <th>備考</th>
                 <td>
-                    <textarea name="note" class="remarks" {{ $attendance->is_editable ? '' : 'disabled' }}>{{ old('note', $attendance->note) }}</textarea>
-                    @error('note')
+                    <textarea name="reason" class="remarks" {{ $attendance->is_editable ? '' : 'readonly' }}>
+                    {{ old('reason', optional($attendance->correctionRequests()->latest())->reason) }}
+                    </textarea>
+                    @error('reason')
                     <div class="error">{{ $message }}</div>
                     @enderror
                 </td>

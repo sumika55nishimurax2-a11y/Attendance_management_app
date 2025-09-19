@@ -28,7 +28,7 @@ class AttendanceRequest extends FormRequest
             'break_end' => ['nullable', 'date_format:H:i'],
             'new_break.break_start' => ['nullable', 'date_format:H:i'],
             'new_break.break_end'   => ['nullable', 'date_format:H:i'],
-            'note' => ['required', 'string'],
+            'reason' => ['required', 'string'],
         ];
     }
 
@@ -37,7 +37,7 @@ class AttendanceRequest extends FormRequest
         return [
             'clock_in.required' => '出勤時間を入力してください',
             'clock_out.required' => '退勤時間を入力してください',
-            'note.required' => '備考を記入してください',
+            'reason.required' => '備考を記入してください',
             'breaks.*.start.date_format' => '休憩開始時間は 00:00 形式で入力してください',
             'breaks.*.end.date_format'   => '休憩終了時間は 00:00 形式で入力してください',
         ];
