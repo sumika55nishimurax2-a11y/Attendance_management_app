@@ -38,9 +38,9 @@
                 <th>出勤・退勤</th>
                 <td>
                     <div class="time-flex">
-                        <input type="text" name="clock_in" value="{{ old('clock_in', optional($attendance->clock_in)->format('H:i')) }}" class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
+                        <input type="text" name="clock_in" value="{{ old('clock_in', $display['clock_in']) }}" class="input time-text">
                         <span>〜</span>
-                        <input type="text" name="clock_out" value="{{ old('clock_out', optional($attendance->clock_out)->format('H:i')) }}" class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
+                        <input type="text" name="clock_out" value="{{ old('clock_out', $display['clock_out']) }}" class="input time-text">
                     </div>
                     @error('clock_in')
                     <div class="error">{{ $message }}</div>
@@ -50,10 +50,8 @@
                     @enderror
                 </td>
             </tr>
-            @php
-            $breaks = $attendance->breaks ?? collect();
-            @endphp
-            @foreach ($attendance->breaks as $i => $break)
+
+            @foreach ($display['breaks'] as $i => $break)
             <tr>
                 <th>@if ($i === 0)
                     休憩
@@ -63,9 +61,8 @@
                 </th>
                 <td>
                     <div class="time-flex">
-                        <input type="text" name="breaks[{{ $i }}][start]" value="{{ old("breaks.$i.start", $break->break_start?->format('H:i')) }}" class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
-                        <span>〜</span>
-                        <input type="text" name="breaks[{{ $i }}][end]" value="{{ old("breaks.$i.end", $break->break_end?->format('H:i')) }}" class="input time-text" {{ $attendance->is_editable ? '' : 'disabled' }}>
+                        <input type="text" name="breaks[{{ $i }}][start]" value="{{ old("breaks.$i.start", \Carbon\Carbon::parse($break->break_start)->format('H:i')) }}" class="input time-text">
+                        <input type="text" name="breaks[{{ $i }}][end]" value="{{ old("breaks.$i.end", \Carbon\Carbon::parse($break->break_end)->format('H:i')) }}" class="input time-text">
                     </div>
                     @error("breaks.$i.start")
                     <div class="error">{{ $message }}</div>
@@ -76,19 +73,18 @@
                 </td>
             </tr>
             @endforeach
-
+            @php
+            $nextIndex = count($display['breaks']);
+            @endphp
             <tr>
                 <th>
-                    @if ($breaks->isEmpty())
+                    @if ($nextIndex === 0)
                     休憩
                     @else
-                    休憩{{ $breaks->count() + 1 }}
+                    休憩{{ $nextIndex + 1 }}
                     @endif
                 </th>
                 <td>
-                    @php
-                    $nextIndex = $breaks->count();
-                    @endphp
                     <div class="time-flex">
                         <input type="text" name="breaks[{{ $nextIndex }}][start]"
                             value="{{ old("breaks.$nextIndex.start") }}"
@@ -110,9 +106,7 @@
             <tr>
                 <th>備考</th>
                 <td>
-                    <textarea name="reason" class="remarks" {{ $attendance->is_editable ? '' : 'disabled' }}>
-                    {{ old('reason') }}
-                    </textarea>
+                    <textarea name="reason" class="remarks" {{ $attendance->is_editable ? '' : 'disabled' }}>{{ old('reason', $latestRequest->reason ?? '') }}</textarea>
                     @error('reason')
                     <div class="error">{{ $message }}</div>
                     @enderror
@@ -144,20 +138,20 @@
             <th>出勤・退勤</th>
             <td>
                 <div class="field-flex">
-                    <div>{{ $attendance->clock_in_formatted }}</div>
+                    <div>{{ \Carbon\Carbon::parse($display['clock_in'])->setTimezone('Asia/Tokyo')->format('H:i') }}</div>
                     <div>〜</div>
-                    <div> {{ $attendance->clock_out_formatted }}</div>
+                    <div>{{ \Carbon\Carbon::parse($display['clock_out'])->setTimezone('Asia/Tokyo')->format('H:i') }}</div>
                 </div>
             </td>
         </tr>
-        @foreach ($attendance->breaks as $i => $break)
+        @foreach ($display['breaks'] as $i => $break)
         <tr>
             <th>@if ($i === 0) 休憩 @else 休憩{{ $i + 1 }} @endif</th>
             <td>
                 <div class="field-flex">
-                    <div>{{ $break->break_start?->format('H:i') }}</div>
+                    <div>{{ \Carbon\Carbon::parse($break->break_start)->format('H:i') }}</div>
                     <div>〜</div>
-                    <div> {{ $break->break_end?->format('H:i') }}</div>
+                    <div>{{ \Carbon\Carbon::parse($break->break_end)->format('H:i') }}</div>
                 </div>
             </td>
         </tr>

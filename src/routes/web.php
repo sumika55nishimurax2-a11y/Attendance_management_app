@@ -40,21 +40,23 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
     return redirect()->route('attendance');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
+Route::get('/staff/auth/verify-now', function () {
+    return view('staff.auth.verify');
+})->middleware('auth')->name('verification.now');
+
+Route::post('/staff/auth/verify', function () {
+    $user = auth()->user();
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+    return redirect('/attendance')->with('status', 'メールアドレスを認証しました');
+})->middleware('auth')->name('verification.perform');
+
 
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-
-if (App::environment('local', 'staging')) {
-    Route::post('/staff/auth/verify-now', function () {
-        $user = auth()->user();
-        if (!$user->hasVerifiedEmail()) {
-            $user->markEmailAsVerified();
-        }
-        return redirect('/attendance')->with('status', 'メールアドレスを認証しました');
-    })->middleware('auth')->name('verification.now');
-}
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
@@ -76,7 +78,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/stamp_correction_request/list', [AdminRequestController::class, 'index'])->name('stamp_correction_request.list');
         Route::get('/stamp_correction_request/approve/{attendance_correction_request}', [AdminRequestController::class, 'showApprove'])
             ->name('stamp_correction_request.show');
-        Route::post('/stamp_correction_request/approve/{attendance_correction_request}', [AdminRequestController::class, 'approve'])
+        Route::post('/stamp_correction_request/approve/{correctionRequest}', [AdminRequestController::class, 'approve'])
             ->name('stamp_correction_request.approve');
     });
 });

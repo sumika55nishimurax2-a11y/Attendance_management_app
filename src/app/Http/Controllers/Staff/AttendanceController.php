@@ -44,7 +44,6 @@ class AttendanceController extends Controller
     {
         if ($id) {
             $attendance = Attendance::with('correctionRequests')->findOrFail($id);
-            // 最新の修正申請を取得
             $latestRequest = $attendance->correctionRequests()->latest()->first();
         } else {
             $date = $request->input('date');
@@ -55,9 +54,51 @@ class AttendanceController extends Controller
             $latestRequest = null;
         }
 
+        // --- 表示用データを加工 ---
+        $display = [
+            'clock_in'  => $attendance->clock_in_formatted,
+            'clock_out' => $attendance->clock_out_formatted,
+            'breaks'    => $attendance->breaks,
+            'reason'    => '',
+        ];
+        // 最新リクエストがある場合は pending でも approved でも理由を表示
+        if ($latestRequest) {
+            $display['reason'] = $latestRequest->reason;
+
+
+            if ($latestRequest && $latestRequest->status === 'pending' && $latestRequest->after_value) {
+                $after = json_decode($latestRequest->after_value, true);
+
+                $display['clock_in']  = $after['clock_in'] ?? $display['clock_in'];
+                $display['clock_out'] = $after['clock_out'] ?? $display['clock_out'];
+
+                if (isset($after['breaks']) && is_array($after['breaks'])) {
+                    $display['breaks'] = collect();
+                    foreach ($after['breaks'] as $b) {
+                        $display['breaks']->push((object)[
+                            'break_start' => isset($b['start']) ? Carbon::parse($b['start'])->format('H:i') : null,
+                            'break_end'   => isset($b['end']) ? Carbon::parse($b['end'])->format('H:i') : null,
+                        ]);
+                    }
+                } else {
+                    // 通常の勤怠テーブルの休憩も同様に加工
+                    $display['breaks'] = $attendance->breaks->map(function ($b) {
+                        return (object)[
+                            'break_start' => $b->break_start?->format('H:i'),
+                            'break_end'   => $b->break_end?->format('H:i'),
+                        ];
+                    });
+                }
+
+                $display['reason'] = $latestRequest->reason;
+            } else {
+                $display['reason'] = null; // 新規の場合は空
+            }
+        }
         return view('staff.detail', [
-            'attendance' => $attendance,
-            'latestRequest' => $latestRequest, // Bladeで使う
+            'attendance'    => $attendance,
+            'latestRequest' => $latestRequest,
+            'display'       => $display,
         ]);
     }
 
@@ -94,14 +135,15 @@ class AttendanceController extends Controller
         // 修正申請／新規登録の申請レコード作成（過去日 or 既存編集のみ）
         if (($attendance->work_date != Carbon::today()->toDateString()) || ($attendance->exists && !empty($beforeValues))) {
             $attendance->correctionRequests()->create([
+                'user_id'      => $attendance->user_id,
                 'field'        => 'all',
                 'before_value' => json_encode($beforeValues),
                 'after_value'  => json_encode([
                     'clock_in'  => $attendance->clock_in,
                     'clock_out' => $attendance->clock_out,
-                    'note'      => $attendance->note,
+                    'breaks'    => $request->input('breaks', []),
                 ]),
-                'reason'       => $request->input('reason', $attendance->exists ? '修正申請' : '新規勤怠登録'),
+                'reason'       => $request->input('reason'),
                 'requested_at' => now(),
                 'status'       => \App\Models\CorrectionRequest::STATUS_PENDING,
             ]);
@@ -116,7 +158,7 @@ class AttendanceController extends Controller
             $start = $break['start'] ?? null;
             $end   = $break['end'] ?? null;
 
-            if (!$start && !$end) continue;
+            if (empty($start) && empty($end)) continue;
 
             $startTime = $start ? Carbon::parse($start) : null;
             $endTime   = $end   ? Carbon::parse($end)   : null;

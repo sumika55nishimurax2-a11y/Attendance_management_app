@@ -11,9 +11,7 @@
 <div class="checkout-container">
     <p class="checkout-text">登録していただいたメールアドレスに認証メールを送付しました。<br />メール認証を完了してください。</p>
 
-    <form method="GET" action="{{ route('verification.now') }}">
-        <button type="submit" class="auth-button">認証はこちらから</button>
-    </form>
+    <a href="{{ route('verification.now') }}" class="auth-button">認証はこちらから</a>
 
     <form method="POST" action="{{ route('verification.send') }}" class="resend-form">
         @csrf

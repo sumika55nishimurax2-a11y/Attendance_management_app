@@ -19,8 +19,7 @@
         <table class="detail-table">
             <tr>
                 <th>名前</th>
-                <td>{{ $attendance->user->name }}</td>
-                <input type="hidden" name="user_id" value="{{ $attendance->user_id }}">
+                <td>{{ $attendance->user->name ?? $correctionRequest->user->name }}</td>
             </tr>
             <tr>
                 <th>日付</th>

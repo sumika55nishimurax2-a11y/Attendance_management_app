@@ -13,7 +13,7 @@
         <h1 class="title">勤怠詳細</h1>
     </div>
 
-    <form method="POST" action="{{ route('admin.stamp_correction_request.approve', ['attendance_correction_request' => $correctionRequest->id]) }}">
+    <form method="POST" action="{{ route('admin.stamp_correction_request.approve', ['correctionRequest' => $correctionRequest->id]) }}">
         @csrf
 
         <table class="detail-table">
@@ -63,7 +63,7 @@
         <button type="button" class="fixed-button" disabled>承認済み</button>
     </div>
     @else
-    <form method="POST" action="{{ route('admin.stamp_correction_request.approve', ['attendance_correction_request' => $correctionRequest->id]) }}" class="button-wrapper">
+    <form method="POST" action="{{ route('admin.stamp_correction_request.approve', ['correctionRequest' => $correctionRequest->id]) }}" class="button-wrapper">
         @csrf
         <button type="submit" class="btn-primary">承認</button>
     </form>

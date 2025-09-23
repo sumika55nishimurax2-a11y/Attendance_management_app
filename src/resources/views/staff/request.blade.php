@@ -36,7 +36,7 @@
                     <td class="left-td">{{ $request->status_label }}</td>
                     <td>{{ $request->attendance->user->name }}</td>
                     <td>{{ $request->attendance->work_date->format('Y/m/d') }}</td>
-                    <td>{{ $request->attendance->note }}</td>
+                    <td>{{ $request->reason }}</td>
                     <td>{{ $request->requested_at->format('Y/m/d') }}</td>
                     <td>
                         <a href="{{ route('attendance.detail', $request->attendance_id) }}" class="detail-link">詳細</a>
@@ -66,7 +66,7 @@
                     <td class="left-td">{{ $request->status_label }}</td>
                     <td>{{ $request->attendance->user->name }}</td>
                     <td>{{ $request->attendance->work_date->format('Y/m/d') }}</td>
-                    <td>{{ $request->attendance->note }}</td>
+                    <td>{{ $request->reason }}</td>
                     <td>{{ $request->requested_at->format('Y/m/d') }}</td>
                     <td>
                         <a href="{{ route('attendance.detail', $request->attendance_id) }}" class="detail-link">詳細</a>

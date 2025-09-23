@@ -45,9 +45,14 @@ class CorrectionRequest extends Model
         return $this->belongsTo(Attendance::class, 'attendance_id', 'id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function approver(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'approver_id');
+        return $this->attendance->user();
     }
 
     public function approve(int $approverId): void

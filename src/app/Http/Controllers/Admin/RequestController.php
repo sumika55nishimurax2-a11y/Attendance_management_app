@@ -12,13 +12,13 @@ class RequestController extends Controller
     public function index(Request $request)
     {
         // 承認待ち一覧
-        $pendingRequests = CorrectionRequest::with(['attendance.user'])
+        $pendingRequests = CorrectionRequest::with(['attendance.user', 'user'])
             ->where('status', 'pending')
             ->orderBy('requested_at', 'desc')
             ->paginate(10, ['*'], 'pending_page');
 
         // 承認済み一覧
-        $approvedRequests = CorrectionRequest::with(['attendance.user'])
+        $approvedRequests = CorrectionRequest::with(['attendance.user', 'user'])
             ->where('status', 'approved')
             ->orderBy('requested_at', 'desc')
             ->paginate(10, ['*'], 'approved_page');
@@ -33,14 +33,14 @@ class RequestController extends Controller
 
         if (!$attendance) {
             $attendance = new Attendance([
-                'user_id' => $attendance_correction_request->user_id,   // 必須
-                'work_date' => $attendance_correction_request ?? now()->format('Y-m-d'), // カラム名を正しく
-                'clock_in' => null,    // 必要に応じて初期値
+                'user_id'   => $attendance_correction_request->attendance->user_id ?? null,
+                'work_date' => $attendance_correction_request->work_date ?? now()->format('Y-m-d'),
+                'clock_in'  => null,
                 'clock_out' => null,
                 'break_time' => 0,
-                'note' => null,
+                'note'      => null,
             ]);
-            $attendance->breaks = collect(); // 休憩は空コレクション
+            $attendance->breaks = collect();
         }
 
         // 表示用コピー
@@ -81,8 +81,8 @@ class RequestController extends Controller
 
         if (!$attendance) {
             $attendance = Attendance::create([
-                'user_id' => $correctionRequest->user_id,
-                'date'    => $correctionRequest->date,
+                'user_id'   => $correctionRequest->user_id,
+                'work_date' => $correctionRequest->work_date ?? now()->format('Y-m-d'),
             ]);
         }
 
