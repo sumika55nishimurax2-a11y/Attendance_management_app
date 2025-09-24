@@ -4,13 +4,13 @@
 
 ### Docker ビルド
 
-1.                                      docker-compose up -d --build
+1.                                       docker-compose up -d --build
 
 ### Laravel 環境構築
 
-1.                                      docker-compose exec php bash
+1.                                       docker-compose exec php bash
 
-2.                                      composer install
+2.                                       composer install
 
 3.  『.env.example』をコピー名前変更し『.env』を作成。31 行目あたりと 70 行目あたりを以下のように編集
 
@@ -60,6 +60,8 @@
 
 ## ER 図
 
+<img width="781" height="591" alt="attendanceappER" src="https://github.com/user-attachments/assets/c3e38e29-071a-4cb5-af34-708549a869c6" />
+
 ## URL
 
 - 開発環境： http://localhost/
@@ -78,17 +80,13 @@
 
 - 一般ユーザーログイン用ダミーデータ
   パスワードは共通で作成しています。
-  password:password
-  -ユーザー１
+  password:password -ユーザー１
   name:佐藤太郎
-  email:taro.sato@example.com
-  -ユーザー２
+  email:taro.sato@example.com -ユーザー２
   name:鈴木花子
-  email:hanako.suzuki@example.com
-  -ユーザー３
+  email:hanako.suzuki@example.com -ユーザー３
   name:田中一郎
   email:ichiro.tanaka@example.com
-
 
 - 管理機能アクセス用管理者ダミーデータ
   ＊この管理者情報では一般機能にはログインはできません。
