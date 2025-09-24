@@ -1,40 +1,62 @@
-.checkout-container {
+/* ページ全体 */
+body,
+html {
+    height: 100%;
+    margin: 0;
+    background-color: #f0f0f0;
+    /* 薄いグレー背景 */
+}
+
+/* 縦横中央配置 */
+.verification-container-wrapper {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    margin: 50px auto;
-    padding: 50px;
-    text-align: center;
+    /* 横中央 */
+    align-items: center;
+    /* 縦中央 */
+    height: 100%;
 }
 
-.checkout-text {
-    font-size: 24px;
-    color: #000000;
-    font-weight: bold;
-    margin: 50px auto;
+/* 認証ボックス */
+.verification-container {
+    width: 600px;
+    padding: 40px;
+    background-color: #fff;
+    /* 白背景 */
     text-align: center;
-}
-
-.auth-button {
-    background-color: #D9D9D9;
-    color: #000000;
-    padding: 10px 20px;
     border-radius: 10px;
-    border: 1px solid #000000;
-    font-weight: bold;
-    font-size: 24px;
-    cursor: pointer;
-    margin: 20px auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.link {
-    background: none;
+/* タイトル */
+.verification-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* 説明文 */
+.verification-text {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+/* 認証ボタン */
+.auth-button {
+    background-color: #000;
+    /* 黒背景 */
+    color: #fff;
+    /* 白文字 */
+    font-size: 18px;
+    padding: 12px 30px;
     border: none;
-    color: #0073CC;
-    font-size: 20px;
-    margin-top: 30px;
-    text-decoration: none;
+    border-radius: 5px;
     cursor: pointer;
-    font: inherit;
+    transition: background-color .2s ease;
+}
+
+/* ホバー時 */
+.auth-button:hover {
+    background-color: #333;
+    /* 濃いグレーで強調 */
 }
