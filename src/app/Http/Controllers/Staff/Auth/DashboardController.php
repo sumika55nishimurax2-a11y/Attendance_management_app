@@ -46,14 +46,28 @@ class DashboardController extends Controller
 
     public function startWork()
     {
-        $attendance = Attendance::create([
-            'user_id' => Auth::id(),
-            'work_date' => now()->toDateString(),
-            'clock_in' => now()->format('H:i:s'),
+        $today = now()->toDateString();
+
+        // すでに当日の勤怠があるか確認
+        $attendance = Attendance::where('user_id', Auth::id())
+            ->where('work_date', $today)
+            ->first();
+
+        if ($attendance) {
+            return redirect()->route('attendance')
+                ->with('error', '本日は既に出勤済みです');
+        }
+
+        // なければ新規作成
+        Attendance::create([
+            'user_id'    => Auth::id(),
+            'work_date'  => $today,
+            'clock_in'   => now()->format('H:i:s'),
             'break_time' => 0,
         ]);
 
-        return redirect()->route('attendance');
+        return redirect()->route('attendance')
+            ->with('status', '出勤打刻しました');
     }
 
     public function finishWork()
