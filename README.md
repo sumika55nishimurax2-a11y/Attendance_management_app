@@ -4,13 +4,13 @@
 
 ### Docker ビルド
 
-1.                                        docker-compose up -d --build
+1.                                         docker-compose up -d --build
 
 ### Laravel 環境構築
 
-1.                                        docker-compose exec php bash
+1.                                         docker-compose exec php bash
 
-2.                                        composer install
+2.                                         composer install
 
 3.  『.env.example』をコピー名前変更し『.env』を作成。31 行目あたりと 70 行目あたりを以下のように編集
 
@@ -85,17 +85,29 @@
 - メール認証は、上記の URL MailHog にアクセスしてメールを確認してください。
 
 - 一般ユーザーログイン用ダミーデータ
+
   パスワードは共通で作成しています。
+
   password:password -ユーザー１
+
   name:佐藤太郎
+
   email:taro.sato@example.com -ユーザー２
+
   name:鈴木花子
+
   email:hanako.suzuki@example.com -ユーザー３
+
   name:田中一郎
+
   email:ichiro.tanaka@example.com
 
 - 管理機能アクセス用管理者ダミーデータ
+
   ＊この管理者情報では一般機能にはログインはできません。
+
   name:山田太一(管理者)
+
   email:admin@example.com
+
   password:admin123
