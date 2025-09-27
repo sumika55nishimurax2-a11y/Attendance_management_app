@@ -4,13 +4,13 @@
 
 ### Docker ビルド
 
-1.                                         docker-compose up -d --build
+1.                                          docker-compose up -d --build
 
 ### Laravel 環境構築
 
-1.                                         docker-compose exec php bash
+1.                                          docker-compose exec php bash
 
-2.                                         composer install
+2.                                          composer install
 
 3.  『.env.example』をコピー名前変更し『.env』を作成。31 行目あたりと 70 行目あたりを以下のように編集
 
@@ -88,15 +88,21 @@
 
   パスワードは共通で作成しています。
 
-  password:password -ユーザー１
+  password:password
+
+  -ユーザー１
 
   name:佐藤太郎
 
-  email:taro.sato@example.com -ユーザー２
+  email:taro.sato@example.com
+
+  -ユーザー２
 
   name:鈴木花子
 
-  email:hanako.suzuki@example.com -ユーザー３
+  email:hanako.suzuki@example.com
+
+  -ユーザー３
 
   name:田中一郎
 
