@@ -4,13 +4,13 @@
 
 ### Docker ビルド
 
-1.                                       docker-compose up -d --build
+1.                                        docker-compose up -d --build
 
 ### Laravel 環境構築
 
-1.                                       docker-compose exec php bash
+1.                                        docker-compose exec php bash
 
-2.                                       composer install
+2.                                        composer install
 
 3.  『.env.example』をコピー名前変更し『.env』を作成。31 行目あたりと 70 行目あたりを以下のように編集
 
@@ -73,6 +73,12 @@
 - phpMyAdmin：http://localhost:8080/
 
 - MailHog: http://localhost:8025/
+
+## 単体テスト（PHPUnit）実行
+
+-      docker-compose exec php bash
+
+-      php artisan test
 
 ## そのほか
 
