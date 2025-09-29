@@ -59,13 +59,23 @@ class AttendanceRequest extends FormRequest
                 $start = $break['start'] ?? null;
                 $end   = $break['end'] ?? null;
 
-                if ($start && $end) {
-                    if (strtotime($start) < strtotime($clockIn) || strtotime($end) > strtotime($clockOut)) {
-                        $validator->errors()->add("breaks.$index.start", '休憩時間が勤務時間外です');
+                // start がある場合のチェック
+                if ($start) {
+                    if (strtotime($start) < strtotime($clockIn) || strtotime($start) > strtotime($clockOut)) {
+                        $validator->errors()->add("breaks.$index.start", '休憩開始時間が勤務時間外です');
                     }
-                    if (strtotime($start) >= strtotime($end)) {
-                        $validator->errors()->add("breaks.$index.start", '休憩開始と終了の順序が不正です');
+                }
+
+                // end がある場合のチェック
+                if ($end) {
+                    if (strtotime($end) < strtotime($clockIn) || strtotime($end) > strtotime($clockOut)) {
+                        $validator->errors()->add("breaks.$index.end", '休憩終了時間が勤務時間外です');
                     }
+                }
+
+                // start と end 両方ある場合の順序チェック
+                if ($start && $end && strtotime($start) >= strtotime($end)) {
+                    $validator->errors()->add("breaks.$index.start", '休憩開始と終了の順序が不正です');
                 }
             }
         });

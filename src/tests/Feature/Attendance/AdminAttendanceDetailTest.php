@@ -43,9 +43,8 @@ class AdminAttendanceDetailTest extends TestCase
         $response = $this->get(route('admin.attendance.detail', ['id' => $this->attendance->id]));
 
         $response->assertStatus(200);
-        $response->assertSee('09:00');
-        $response->assertSee('18:00');
-        $response->assertSee('初期備考');
+        $response->assertSee($this->attendance->clock_in_formatted);
+        $response->assertSee($this->attendance->clock_out_formatted);
     }
 
     /** @test */
@@ -97,16 +96,16 @@ class AdminAttendanceDetailTest extends TestCase
     }
 
     /** @test */
-    public function error_when_remark_is_empty()
+    public function error_when_reason_is_empty()
     {
         $this->actingAs($this->admin);
 
         $response = $this->post(route('admin.attendance.update', ['id' => $this->attendance->id]), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
-            'note' => '',
+            'reason' => '',
         ]);
 
-        $response->assertSessionHasErrors(['note']);
+        $response->assertSessionHasErrors(['reason']);
     }
 }

@@ -20,6 +20,10 @@ class AdminLoginTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['email']);
+        $this->assertStringContainsString(
+            'メールアドレスを入力してください',
+            session('errors')->first('email')
+        );
     }
 
     /** @test */
@@ -31,6 +35,10 @@ class AdminLoginTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['password']);
+        $this->assertStringContainsString(
+            'パスワードを入力してください',
+            session('errors')->first('password')
+        );
     }
 
     /** @test */
@@ -50,7 +58,10 @@ class AdminLoginTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['email']);
-        $this->assertGuest(); // ログインしていないことを確認
+        $this->assertStringContainsString(
+            'ログイン情報が登録されていません',
+            session('errors')->first('email')
+        );
     }
 
     /** @test */

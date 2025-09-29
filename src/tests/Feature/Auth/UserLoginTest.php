@@ -20,6 +20,10 @@ class UserLoginTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['name']);
+        $this->assertStringContainsString(
+            'お名前を入力してください',
+            session('errors')->first('name')
+        );
     }
 
     /** @test */
@@ -33,6 +37,10 @@ class UserLoginTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['email']);
+        $this->assertStringContainsString(
+            'メールアドレスを入力してください',
+            session('errors')->first('email')
+        );
     }
 
     /** @test */
@@ -46,6 +54,10 @@ class UserLoginTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['password']);
+        $this->assertStringContainsString(
+            'パスワードは8文字以上で入力してください',
+            session('errors')->first('password')
+        );
     }
 
     /** @test */
@@ -59,6 +71,10 @@ class UserLoginTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['password']);
+        $this->assertStringContainsString(
+            'パスワードと一致しません',
+            session('errors')->first('password')
+        );
     }
 
     /** @test */
@@ -72,6 +88,10 @@ class UserLoginTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['password']);
+        $this->assertStringContainsString(
+            'パスワードを入力してください',
+            session('errors')->first('password')
+        );
     }
 
     /** @test */
