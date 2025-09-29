@@ -60,22 +60,22 @@ class AttendanceRequest extends FormRequest
                 $end   = $break['end'] ?? null;
 
                 // start がある場合のチェック
-                if ($start) {
-                    if (strtotime($start) < strtotime($clockIn) || strtotime($start) > strtotime($clockOut)) {
-                        $validator->errors()->add("breaks.$index.start", '休憩開始時間が勤務時間外です');
-                    }
+                if ($start && (strtotime($start) < strtotime($clockIn) || strtotime($start) > strtotime($clockOut))) {
+                    $validator->errors()->add("breaks.$index.start", '休憩時間が不適切な値です');
                 }
 
                 // end がある場合のチェック
                 if ($end) {
-                    if (strtotime($end) < strtotime($clockIn) || strtotime($end) > strtotime($clockOut)) {
-                        $validator->errors()->add("breaks.$index.end", '休憩終了時間が勤務時間外です');
+                    if (strtotime($end) < strtotime($clockIn)) {
+                        $validator->errors()->add("breaks.$index.end", '休憩時間が不適切な値です');
+                    } elseif (strtotime($end) > strtotime($clockOut)) {
+                        $validator->errors()->add("breaks.$index.end", '休憩時間もしくは退勤時間が不適切な値です');
                     }
                 }
 
-                // start と end 両方ある場合の順序チェック
+                // start と end の順序チェック
                 if ($start && $end && strtotime($start) >= strtotime($end)) {
-                    $validator->errors()->add("breaks.$index.start", '休憩開始と終了の順序が不正です');
+                    $validator->errors()->add("breaks.$index.start", '休憩時間もしくは退勤時間が不適切な値です');
                 }
             }
         });

@@ -44,6 +44,10 @@ class UserCorrectionRequestTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['clock_in']);
+        $this->assertEquals(
+            '出勤時間もしくは退勤時間が不適切な値です',
+            session('errors')->first('clock_in')
+        );
     }
 
     /** @test */
@@ -59,6 +63,10 @@ class UserCorrectionRequestTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['reason']);
+        $this->assertEquals(
+            '備考を記入してください',
+            session('errors')->first('reason')
+        );
     }
 
     /** @test */

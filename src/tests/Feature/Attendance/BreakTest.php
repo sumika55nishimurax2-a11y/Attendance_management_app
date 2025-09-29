@@ -28,17 +28,37 @@ class BreakTest extends TestCase
     }
 
     /** @test */
-    public function break_in_button_works_properly()
+    public function break_in_button_switches_to_resume_button()
     {
-        $this->actingAs($this->user, 'web');
+        $user = User::factory()->create();
+        $user->markEmailAsVerified();
+        $this->actingAs($user, 'web');
 
-        $response = $this->post(route('attendance.break_start'));
+        $this->post(route('attendance.start'));
+        $this->post(route('attendance.break_start'));
 
-        $response->assertRedirect(route('attendance'));
+        $response = $this->get(route('attendance'));
 
-        $this->assertDatabaseHas('break_times', [
-            'attendance_id' => $this->attendance->id,
-        ]);
+        $response->assertStatus(200);
+        $response->assertSee('休憩戻'); // 休憩戻ボタンが出ている
+    }
+
+    /** @test */
+    public function break_out_button_switches_back_to_break_button()
+    {
+        $user = User::factory()->create();
+        $user->markEmailAsVerified();
+        $this->actingAs($user, 'web');
+
+        $this->post(route('attendance.start'));
+        $this->post(route('attendance.break_start'));
+        $this->post(route('attendance.break_end'));
+
+        $response = $this->get(route('attendance'));
+
+        $response->assertStatus(200);
+        $response->assertSee('休憩入'); // 再び休憩開始ボタンが出ている
+        $response->assertSee('出勤中'); // 出勤中表示も出ている
     }
 
     /** @test */

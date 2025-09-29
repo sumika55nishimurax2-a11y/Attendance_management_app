@@ -28,34 +28,26 @@ class ClockOutTest extends TestCase
     }
 
     /** @test */
-    public function clock_out_button_works_properly()
+    public function user_can_clock_out_successfully()
     {
-        $this->actingAs($this->user, 'web');
+        $user = User::factory()->create();
+        $user->markEmailAsVerified();
+        $this->actingAs($user, 'web');
 
-        $response = $this->post(route('attendance.finish'));
+        // 出勤処理
+        $this->post(route('attendance.start'));
 
-        $response->assertRedirect(route('attendance'));
+        // 退勤前に「退勤」ボタンが見える
+        $response = $this->get(route('attendance'));
+        $response->assertSee('退勤');
 
-        $this->assertDatabaseHas('attendances', [
-            'id'        => $this->attendance->id,
-            'user_id'   => $this->user->id,
-            'work_date' => now()->toDateString(),
-            'clock_out' => now()->format('H:i:s'),
-        ]);
-    }
-
-    /** @test */
-    public function clock_out_time_is_displayed_in_attendance_list()
-    {
-        $this->actingAs($this->user, 'web');
-
-        // 出勤中 → 退勤処理
+        // 退勤処理
         $this->post(route('attendance.finish'));
 
-        // 勤怠一覧を確認
-        $response = $this->get(route('attendance.list'));
-
+        // 退勤後に「退勤」ボタンが消え、ステータスが「退勤済」
+        $response = $this->get(route('attendance'));
         $response->assertStatus(200);
-        $response->assertSee(now()->format('H:i')); // 退勤時刻が表示される
+        $response->assertDontSee('<button type="submit" class="attendance-button">退勤</button>', false);
+        $response->assertSee('退勤済');
     }
 }

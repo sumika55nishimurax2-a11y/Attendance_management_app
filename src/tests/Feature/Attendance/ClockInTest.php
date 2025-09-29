@@ -12,21 +12,23 @@ class ClockInTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function user_can_clock_in_successfully()
+    public function clock_in_button_switches_to_status_working()
     {
         $user = User::factory()->create();
         $user->markEmailAsVerified();
-
         $this->actingAs($user, 'web');
 
-        $response = $this->post(route('attendance.start'));
+        // 出勤前: 出勤ボタンがある
+        $response = $this->get(route('attendance'));
+        $response->assertSee('出勤');
 
-        $response->assertRedirect(route('attendance'));
+        // 出勤処理
+        $this->post(route('attendance.start'));
 
-        $this->assertDatabaseHas('attendances', [
-            'user_id'   => $user->id,
-            'work_date' => now()->toDateString(),
-        ]);
+        // 出勤後: 出勤ボタンが消えてステータスが出勤中
+        $response = $this->get(route('attendance'));
+        $response->assertDontSee('<button type="submit" class="attendance-button">出勤</button>', false);
+        $response->assertSee('出勤中');
     }
 
     /** @test */
