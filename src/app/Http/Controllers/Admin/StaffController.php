@@ -61,29 +61,32 @@ class StaffController extends Controller
         $lastDay  = $firstDay->copy()->endOfMonth();
 
         $attendances = Attendance::where('user_id', $user->id)
-            ->whereBetween('work_date', [$firstDay->toDateString(), $lastDay->toDateString()])
+            ->whereDate('work_date', '>=', $firstDay)
+            ->whereDate('work_date', '<=', $lastDay)
             ->orderBy('work_date')
             ->get()
-            ->keyBy(fn($att) => $att->work_date); // 日付文字列でキー化
+            ->keyBy(fn($att) => \Carbon\Carbon::parse($att->work_date)->toDateString());
 
         return response()->streamDownload(function () use ($attendances, $firstDay, $lastDay) {
             $handle = fopen('php://output', 'w');
             fputcsv($handle, ['日付', '出勤', '退勤', '休憩(分)', '合計']);
 
             for ($date = $firstDay->copy(); $date->lte($lastDay); $date->addDay()) {
-                $key = $date->format('Y-m-d');
+                $key = $date->toDateString();
                 $att = $attendances->get($key);
 
-                $clockIn  = $att->clock_in ?? '';
-                $clockOut = $att->clock_out ?? '';
-                $break    = $att->break_time ?? '';
-                $total    = '';
+                $clockIn  = $att?->clock_in  ? \Carbon\Carbon::parse($att->clock_in)->format('H:i')   : '';
+                $clockOut = $att?->clock_out ? \Carbon\Carbon::parse($att->clock_out)->format('H:i')  : '';
 
-                if ($clockIn && $clockOut) {
-                    $start = Carbon::createFromFormat('H:i:s', $clockIn);
-                    $end   = Carbon::createFromFormat('H:i:s', $clockOut);
-                    $total = $end->diffInMinutes($start) - $break;
+                $break = (int)($att->break_time ?? 0);
+
+                $totalMinutes = '';
+                if ($att?->clock_in && $att?->clock_out) {
+                    $start = \Carbon\Carbon::parse($att->clock_in);
+                    $end   = \Carbon\Carbon::parse($att->clock_out);
+                    $totalMinutes = max(0, $end->diffInMinutes($start) - $break);
                 }
+                $total = $totalMinutes !== '' ? sprintf('%d:%02d', intdiv($totalMinutes, 60), $totalMinutes % 60) : '';
 
                 fputcsv($handle, [
                     $date->format('Y/m/d (D)'),
