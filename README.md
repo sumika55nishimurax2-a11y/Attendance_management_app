@@ -4,23 +4,23 @@
 
 ### Docker ビルド
 
-1. イメージをビルドする。
+1.イメージをビルドする。
 
-   docker-compose up -d --build
+    docker-compose up -d --build
 
 ### Laravel 環境構築
 
-1. docker コンテナに接続する。
+1.docker コンテナに接続する。
 
-   docker-compose exec php bash
+    docker-compose exec php bash
 
-2. 必要なパッケージをインストールする。
+2.必要なパッケージをインストールする。
 
-   composer install
+    composer install
 
-3. プロジェクトのルート（/var/www/）で以下のコマンドを使い、『.env.example』をコピー名前変更し『.env』を作成。
+3.プロジェクトのルート（/var/www/）で以下のコマンドを使い、『.env.example』をコピー名前変更し『.env』を作成。
 
-   cp .env.example .env
+      cp .env.example .env
 
 『.env』ファイルの　 11 行目あたりと 31 行目あたりを以下のように編集。
 
@@ -115,9 +115,9 @@
 
   - ユーザー３
 
-  name:田中一郎
+    name:田中一郎
 
-  email:ichiro.tanaka@example.com
+    email:ichiro.tanaka@example.com
 
 - 管理機能アクセス用管理者ダミーデータ
 
