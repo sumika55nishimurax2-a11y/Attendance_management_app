@@ -114,9 +114,8 @@
             <tr>
                 <th>備考</th>
                 <td>
-                    <textarea name="reason" class="remarks" {{ $attendance->is_editable ? '' : 'readonly' }}>
-                    {{ old('reason', optional($attendance->correctionRequests()->latest())->reason) }}
-                    </textarea>
+                    @php $latestReq = $attendance->correctionRequests->first(); @endphp
+                    <textarea name="reason" class="remarks" {{ $attendance->is_editable ? '' : 'readonly' }}>{{ old('reason', $latestReq->reason ?? '') }}</textarea>
                     @error('reason')
                     <div class="error">{{ $message }}</div>
                     @enderror

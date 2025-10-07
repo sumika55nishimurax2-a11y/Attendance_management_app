@@ -190,6 +190,7 @@ class AttendanceController extends Controller
                 $query->where('user_id', $user->id);
             })
             ->where('status', 'pending')
+            ->whereNotNull('requested_at')
             ->orderBy('requested_at', 'desc')
             ->paginate(20, ['*'], 'pending_page');
 
@@ -199,6 +200,7 @@ class AttendanceController extends Controller
                 $query->where('user_id', $user->id);
             })
             ->where('status', 'approved')
+            ->whereNotNull('requested_at')
             ->orderBy('requested_at', 'desc')
             ->paginate(20, ['*'], 'approved_page');
 
