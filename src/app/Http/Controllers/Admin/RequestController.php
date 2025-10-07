@@ -79,55 +79,57 @@ class RequestController extends Controller
 
     public function approve(CorrectionRequest $correctionRequest)
     {
-        return DB::transaction(function () use ($correctionRequest) {
-            $attendance = $correctionRequest->attendance;
-            if (!$attendance) {
-                $attendance = Attendance::create([
-                    'user_id'   => $correctionRequest->user_id,
-                    'work_date' => $correctionRequest->work_date ?? now()->format('Y-m-d'),
-                ]);
-                $correctionRequest->attendance()->associate($attendance);
-                $correctionRequest->save();
+        // 勤怠データ取得、存在しなければ新規作成
+        $attendance = $correctionRequest->attendance;
+
+        if (!$attendance) {
+            $attendance = Attendance::create([
+                'user_id'   => $correctionRequest->user_id,
+                'work_date' => $correctionRequest->work_date ?? now()->format('Y-m-d'),
+            ]);
+        }
+
+        // 保留中の申請を全て取得
+        $requests = $attendance->correctionRequests()->where('status', 'pending')->get();
+
+        foreach ($requests as $req) {
+            $after = $req->after_value;
+            if (is_null($after)) continue;
+
+            switch ($req->field) {
+                case 'clock_in':
+                case 'clock_out':
+                    $attendance->{$req->field} = $after;
+                    break;
+
+                case 'break_start':
+                case 'break_end':
+                    // 複数の休憩に対応
+                    $break = $attendance->breaks()->find($req->break_id);
+
+                    if ($break) {
+                        // 既存 break の更新
+                        $break->{$req->field} = $after;
+                        $break->save();
+                    } else {
+                        // break_id が無い場合は新規作成
+                        $attendance->breaks()->create([
+                            'id' => $req->break_id,
+                            $req->field => $after,
+                        ]);
+                    }
+                    break;
             }
 
+            // 申請ステータスを承認済みに更新
+            $req->status = 'approved';
+            $req->approver_id = auth()->id();
+            $req->save();
+        }
 
-            $requests = $attendance->correctionRequests()->where('status', 'pending')->get();
-            if ($correctionRequest->status === 'pending' && $requests->doesntContain('id', $correctionRequest->id)) {
-                $requests->push($correctionRequest);
-            }
+        // 勤怠本体保存
+        $attendance->save();
 
-            foreach ($requests as $req) {
-                $after = $req->after_value;
-                if ($after === null) continue;
-
-                switch ($req->field) {
-                    case 'clock_in':
-                    case 'clock_out':
-                        $attendance->{$req->field} = $after;
-                        break;
-
-                    case 'break_start':
-                    case 'break_end':
-                        $break = $attendance->breaks()->find($req->break_id);
-                        if ($break) {
-                            $break->{$req->field} = $after;
-                            $break->save();
-                        } else {
-                            $attendance->breaks()->create([$req->field => $after]);
-                        }
-                        break;
-                    default:
-                        continue 2;
-                }
-
-                $req->status = 'approved';
-                $req->approver_id = auth()->id();
-                $req->save();
-            }
-
-            $attendance->save();
-
-            return redirect()->back()->with('success', '承認が完了しました。');
-        });
+        return redirect()->back()->with('success', '承認が完了しました。');
     }
 }
