@@ -118,9 +118,13 @@ class RequestController extends Controller
                     break;
             }
 
-            // 申請ステータスを承認済みに更新
+            // 申請のステータス更新
             $req->status = 'approved';
             $req->approver_id = auth()->id();
+            // requested_at が null の場合は補完
+            if (is_null($req->requested_at)) {
+                $req->requested_at = now();
+            }
             $req->save();
         }
 

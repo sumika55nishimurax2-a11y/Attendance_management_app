@@ -4,17 +4,32 @@
 
 ### Docker ビルド
 
-1.                                          docker-compose up -d --build
+1. イメージをビルドする。
+   docker-compose up -d --build
 
 ### Laravel 環境構築
 
-1.                                          docker-compose exec php bash
+1. docker コンテナに接続する。
+   docker-compose exec php bash
 
-2.                                          composer install
+2. 必要なパッケージをインストールする。
+   composer install
 
-3.  『.env.example』をコピー名前変更し『.env』を作成。31 行目あたりと 70 行目あたりを以下のように編集
+3. プロジェクトのルート（/var/www/）で以下のコマンドを使い、『.env.example』をコピー名前変更し『.env』を作成。
+   cp .env.example .env
+
+『.env』ファイルの　 11 行目あたりと 31 行目あたりを以下のように編集。
 
             / 前略
+            DB_CONNECTION=mysql
+            DB_HOST=mysql
+            DB_PORT=3306
+            DB_DATABASE=laravel_db
+            DB_USERNAME=laravel_user
+            DB_PASSWORD=laravel_pass
+
+            // 略
+
             MAIL_MAILER=smtp
             MAIL_HOST=mailhog
             MAIL_PORT=1025
@@ -24,14 +39,6 @@
             MAIL_FROM_ADDRESS="hello@example.com"
             MAIL_FROM_NAME="勤怠管理"
 
-            // 略
-
-            DB_CONNECTION=mysql
-            DB_HOST=mysql
-            DB_PORT=3306
-            DB_DATABASE=laravel_db
-            DB_USERNAME=laravel_user
-            DB_PASSWORD=laravel_pass
             // 後略
 
 5.アプリキーを作成
