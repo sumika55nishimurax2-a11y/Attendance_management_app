@@ -87,11 +87,9 @@
 
         buttons.forEach(button => {
             button.addEventListener("click", () => {
-                // 全部リセット
                 buttons.forEach(btn => btn.classList.remove("active"));
                 panels.forEach(panel => panel.classList.remove("active"));
 
-                // クリックされたタブをアクティブ化
                 button.classList.add("active");
                 document.getElementById(button.dataset.tab).classList.add("active");
             });

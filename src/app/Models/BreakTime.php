@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class BreakTime extends Model
 {
@@ -31,8 +32,7 @@ class BreakTime extends Model
         static::saved(function ($break) {
             $attendance = $break->attendance;
             if ($attendance) {
-                // クエリで直接合計を計算
-                $total = $attendance->breaks()->sum(\DB::raw('TIMESTAMPDIFF(MINUTE, break_start, break_end)'));
+                $total = $attendance->breaks()->sum(DB::raw('TIMESTAMPDIFF(MINUTE, break_start, break_end)'));
                 $attendance->update(['break_time' => $total]);
             }
         });
@@ -40,7 +40,7 @@ class BreakTime extends Model
         static::deleted(function ($break) {
             $attendance = $break->attendance;
             if ($attendance) {
-                $total = $attendance->breaks()->sum(\DB::raw('TIMESTAMPDIFF(MINUTE, break_start, break_end)'));
+                $total = $attendance->breaks()->sum(DB::raw('TIMESTAMPDIFF(MINUTE, break_start, break_end)'));
                 $attendance->update(['break_time' => $total]);
             }
         });
