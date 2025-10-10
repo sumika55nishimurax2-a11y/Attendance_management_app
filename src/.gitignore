@@ -4,6 +4,7 @@
 /public/hot
 /public/storage
 /storage/*.key
+/docker/mysql/data/
 /vendor
 .env
 .env.backup
