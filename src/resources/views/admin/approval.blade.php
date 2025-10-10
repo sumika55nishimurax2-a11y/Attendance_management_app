@@ -32,16 +32,28 @@
                     {{ $displayDate->format('Y年n月j日') }}
                 </td>
             </tr>
+            @php
+            $beforeIn = $attendance->clock_in;
+            $beforeOut = $attendance->clock_out;
+            $afterIn = $displayAttendance->clock_in ?? $beforeIn;
+            $afterOut = $displayAttendance->clock_out ?? $beforeOut;
+            @endphp
             <tr>
                 <th>出勤・退勤</th>
                 <td>
-                    {{ $displayAttendance->clock_in ? \Carbon\Carbon::parse($displayAttendance->clock_in)->format('H:i') : '-' }}
+                    {{ $afterIn ? \Carbon\Carbon::parse($afterIn)->format('H:i') : '-' }}
                     〜
-                    {{ $displayAttendance->clock_out ? \Carbon\Carbon::parse($displayAttendance->clock_out)->format('H:i') : '-' }}
+                    {{ $afterOut ? \Carbon\Carbon::parse($afterOut)->format('H:i') : '-' }}
                 </td>
             </tr>
 
-            @foreach ($displayAttendance->breaks as $i => $break)
+            @php
+            $breaks = $displayAttendance->relationLoaded('breaks') && $displayAttendance->breaks->count()
+            ? $displayAttendance->breaks
+            : $attendance->breaks;
+            @endphp
+
+            @forelse ($breaks as $i => $break)
             <tr>
                 <th>{{ $i === 0 ? '休憩' : '休憩'.($i+1) }}</th>
                 <td>
@@ -50,7 +62,12 @@
                     {{ $break->break_end ? \Carbon\Carbon::parse($break->break_end)->format('H:i') : '-' }}
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <th>休憩</th>
+                <td>- 〜 -</td>
+            </tr>
+            @endforelse
 
             <tr>
                 <th>備考</th>
