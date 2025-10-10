@@ -36,7 +36,7 @@
                     <td class="left-td">{{ $request->status_label }}</td>
                     <td>{{ $request->attendance->user->name ?? $request->user->name }}</td>
                     <td>{{ $request->attendance->work_date->format('Y/m/d') }}</td>
-                    <td class="reason">{{$request->reason}}</td>
+                    <td>{{$request->reason}}</td>
                     <td>{{ $request->requested_at->format('Y/m/d') }}</td>
                     <td>
                         <a href="{{ route('admin.stamp_correction_request.show', $request->id) }}" class="detail-link">詳細</a>
@@ -65,7 +65,7 @@
                     <td class="left-td">{{ $request->status_label }}</td>
                     <td>{{ $request->attendance->user->name ?? $request->user->name }}</td>
                     <td>{{ $request->attendance->work_date->format('Y/m/d') }}</td>
-                    <td class="reason">{{ $request->reason }}</td>
+                    <td>{{ $request->reason }}</td>
                     <td>{{ $request->requested_at->format('Y/m/d') }}</td>
                     <td>
                         <a href="{{ route('admin.stamp_correction_request.show', $request->id) }}" class="detail-link">詳細</a>

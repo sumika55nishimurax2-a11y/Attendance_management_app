@@ -144,9 +144,14 @@
                 </div>
             </td>
         </tr>
-        @foreach ($display['breaks'] as $i => $break)
+        @foreach (collect($display['breaks'])->values() as $break)
+        @php
+        $start = $break->break_start ? \Carbon\Carbon::parse($break->break_start) : null;
+        $end = $break->break_end ? \Carbon\Carbon::parse($break->break_end) : null;
+        @endphp
+        @continue(!$start && !$end)
         <tr>
-            <th>@if ($i === 0) 休憩 @else 休憩{{ $i + 1 }} @endif</th>
+            <th>{{ $loop->first ? '休憩' : '休憩' . $loop->iteration }}</th>
             <td>
                 <div class="field-flex">
                     <div>{{ \Carbon\Carbon::parse($break->break_start)->format('H:i') }}</div>
