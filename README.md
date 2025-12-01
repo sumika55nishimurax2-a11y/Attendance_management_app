@@ -127,17 +127,27 @@
 
 # 単体テストについて
 
-## 単体テスト（PHPUnit）実行コマンド
+ 1. .env.testing の準備
 
-Docker コンテナに接続する
+     このリポジトリにはテスト用の設定ファイル .env.testing が含まれています。
 
--      docker-compose exec php bash
+     クローン後、必要であれば 自分の環境に合わせてデータベース名・ユーザー名・パスワードだけ変更 してください。
 
-テストを実行する
+2. テスト用データベースを作る
 
--      php artisan test
+     テスト専用のデータベースを自分のパソコンに作ります。
 
----
+     php artisan migrate --env=testing
+
+
+3. テストを実行する
+
+     テスト実行コマンド
+
+   　php artisan test
+
+
+   
 
 ## ログイン認証機能
 
