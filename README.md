@@ -137,14 +137,14 @@
 
      テスト専用のデータベースを自分のパソコンに作ります。
 
-     php artisan migrate --env=testing
+        php artisan migrate --env=testing
 
 
 3. テストを実行する
 
      テスト実行コマンド
 
-   　php artisan test
+        php artisan test
 
 
    
